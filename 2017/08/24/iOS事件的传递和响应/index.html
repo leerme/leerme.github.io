@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>iOS 事件的传递和响应 | leerme の Blog</title>
+
+  <!-- keywords -->
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="谈一谈iOS事件的产生和传递 1.事件的产生 发生触摸事件后，系统会将该事件加入到一个由UIApplication管理的事件队列中. UIApplication会从事件队列中取出最前面的事件，并将事件分发下去以便处理，通常，先发送事件给应用程序的主窗口（keyWindow）。 主窗口会在视图层次结构中找到一个最合适的视图来处理触摸事件，这也是整个事件处理过程的第一步  2.事件的传递 首先判断主窗">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS 事件的传递和响应">
+<meta property="og:url" content="http://yoursite.com/2017/08/24/iOS事件的传递和响应/index.html">
+<meta property="og:site_name" content="leerme の Blog">
+<meta property="og:description" content="谈一谈iOS事件的产生和传递 1.事件的产生 发生触摸事件后，系统会将该事件加入到一个由UIApplication管理的事件队列中. UIApplication会从事件队列中取出最前面的事件，并将事件分发下去以便处理，通常，先发送事件给应用程序的主窗口（keyWindow）。 主窗口会在视图层次结构中找到一个最合适的视图来处理触摸事件，这也是整个事件处理过程的第一步  2.事件的传递 首先判断主窗">
+<meta property="og:image" content="http://ow7iaz7ej.bkt.clouddn.com/3iosevent.png">
+<meta property="og:updated_time" content="2017-09-14T07:17:40.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS 事件的传递和响应">
+<meta name="twitter:description" content="谈一谈iOS事件的产生和传递 1.事件的产生 发生触摸事件后，系统会将该事件加入到一个由UIApplication管理的事件队列中. UIApplication会从事件队列中取出最前面的事件，并将事件分发下去以便处理，通常，先发送事件给应用程序的主窗口（keyWindow）。 主窗口会在视图层次结构中找到一个最合适的视图来处理触摸事件，这也是整个事件处理过程的第一步  2.事件的传递 首先判断主窗">
+<meta name="twitter:image" content="http://ow7iaz7ej.bkt.clouddn.com/3iosevent.png">
+  
+    <link rel="alternative" href="/atom.xml" title="leerme の Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="http://ow7iaz7ej.bkt.clouddn.com/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+        }
+        else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+  
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-85415703-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  <script src="//cdn.bootcss.com/require.js/2.3.2/require.min.js"></script>
+  <script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+
+  
+</head>
+<body>
+  <div id="container">
+    <div id="particles-js"></div>
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="http://ow7iaz7ej.bkt.clouddn.com/%E9%92%9F.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">leerme</a></h1>
+		</hgroup>
+
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						<div class="icon-wrap icon-link hide" data-idx="2">
+							<div class="loopback_l"></div>
+							<div class="loopback_r"></div>
+						</div>
+						
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						<li>友情链接</li>
+						
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						
+					</div>
+				</section>
+				
+				
+				
+				<section class="switch-part switch-part3">
+					<div id="js-friends">
+					
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="https://github.com/smackgg/hexo-theme-smackdown">smackdown</a>
+			        
+			        </div>
+				</section>
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">leerme</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="http://ow7iaz7ej.bkt.clouddn.com/%E9%92%9F.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">leerme</h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-iOS事件的传递和响应" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/08/24/iOS事件的传递和响应/" class="article-date">
+  	<time datetime="2017-08-24T02:41:45.000Z" itemprop="datePublished">2017-08-24</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      iOS 事件的传递和响应
+      
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+
+        
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <pre><code>谈一谈iOS事件的产生和传递
+</code></pre><h1 id="1-事件的产生"><a href="#1-事件的产生" class="headerlink" title="1.事件的产生"></a>1.事件的产生</h1><ul>
+<li>发生触摸事件后，系统会将该事件加入到一个由UIApplication管理的事件队列中.</li>
+<li>UIApplication会从事件队列中取出最前面的事件，并将事件分发下去以便处理，通常，先发送事件给应用程序的主窗口（keyWindow）。</li>
+<li>主窗口会在视图层次结构中找到一个最合适的视图来处理触摸事件，这也是整个事件处理过程的第一步</li>
+</ul>
+<h1 id="2-事件的传递"><a href="#2-事件的传递" class="headerlink" title="2.事件的传递"></a>2.事件的传递</h1><ol>
+<li>首先判断主窗口（keyWindow）自己是否能接受触摸事件</li>
+<li>判断触摸点是否在自己身上</li>
+<li>子控件数组中从后往前遍历子控件，重复前面的两个步骤（所谓从后往前遍历子控件，就是首先查找子控件数组中最后一个元素，然后执行1、2步骤</li>
+<li>view，比如叫做subView，那么会把这个事件交给这个subView，再遍历这个subView的子控件，直至没有更合适的view为止</li>
+<li>如果没有符合条件的子控件，那么就认为自己最合适处理这个事件，也就是自己是最合适的view</li>
+</ol>
+<h3 id="UIView不能接收触摸事件的三种情况："><a href="#UIView不能接收触摸事件的三种情况：" class="headerlink" title="UIView不能接收触摸事件的三种情况："></a>UIView不能接收触摸事件的三种情况：</h3><ul>
+<li><strong>不允许交互</strong>：userInteractionEnabled = NO</li>
+<li><strong>隐藏</strong>：如果把父控件隐藏，那么子控件也会隐藏，隐藏的控件不能接受事件</li>
+<li><strong>透明度</strong>：如果设置一个控件的透明度&lt;0.01，会直接影响子控件的透明度。alpha：0.0~0.01为透明。</li>
+</ul>
+<p><strong>注 意</strong>:默认UIImageView不能接受触摸事件，因为不允许交互，即userInteractionEnabled = NO，所以如果希望UIImageView可以交互，需要userInteractionEnabled = YES。发生在事件传递的时候。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
+<li>点击一个UIView或产生一个触摸事件A，这个触摸事件A会被添加到由UIApplication管理的事件队列中（即，首先接收到事件的是UIApplication）。</li>
+<li>UIApplication会从事件对列中取出最前面的事件（此处假设为触摸事件A），把事件A传递给应用程序的主窗口（keyWindow）。</li>
+<li>窗口会在视图层次结构中找到一个最合适的视图来处理触摸事件。（至此，第一步已完成）</li>
+</ol>
+<p><img src="http://ow7iaz7ej.bkt.clouddn.com/3iosevent.png" alt="iOS事件示例"></p>
+<p>如果想让某个view不能接收事件（或者说，事件传递到某个view那里就断了），那么可以通过刚才提到的三种方式。比如，设置其userInteractionEnabled = NO;那么传递下来的事件就会由该view的父控件处理。<br>例如，不想让蓝色的view接收事件，那么可以设置蓝色的view的userInteractionEnabled = NO;那么点击黄色的view或者蓝色的view所产生的事件，橙色的view就会成为最合适的view。事件都会由橙色的veiw处理。<br>所以，不管视图能不能处理事件，只要点击了视图就都会产生事件，关键看该事件是由谁来处理！也就是说，如果蓝色视图不能处理事件，点击蓝色视图产生的触摸事件不会由被点击的视图（蓝色视图）处理！</p>
+<p><strong>注意</strong>：如果设置父控件的透明度或者hidden，会直接影响到子控件的透明度和hidden。如果父控件的透明度为0或者hidden = YES，那么子控件也是不可见的！</p>
+<h1 id="3-如何寻找最合适的view"><a href="#3-如何寻找最合适的view" class="headerlink" title="3.如何寻找最合适的view"></a>3.如何寻找最合适的view</h1><pre><code>应用如何找到最合适的控件来处理事件？
+</code></pre><ol>
+<li>首先判断主窗口（keyWindow）自己是否能接受触摸事件</li>
+<li>触摸点是否在自己身上</li>
+<li>从后往前遍历子控件，重复前面的两个步骤（首先查找数组中最后一个元素）</li>
+<li>如果没有符合条件的子控件，那么就认为自己最合适处理</li>
+</ol>
+<p><strong>详述：</strong><br>1、主窗口接收到应用程序传递过来的事件后，首先判断自己能否接手触摸事件。如果能，那么在判断触摸点在不在窗口自己身上<br>2、如果触摸点也在窗口身上，那么窗口会从后往前遍历自己的子控件（遍历自己的子控件只是为了寻找出来最合适的view）<br>3、遍历到每一个子控件后，又会重复上面的两个步骤（传递事件给子控件，1.判断子控件能否接受事件，2.点在不在子控件上）<br>4、如此循环遍历子控件，直到找到最合适的view，如果没有更合适的子控件，那么自己就成为最合适的view。<br>找到最合适的view后，就会调用该view的touches方法处理具体的事件。所以，只有找到最合适的view，把事件传递给最合适的view后，才会调用touches方法进行接下来的事件处理。找不到最合适的view，就不会调用touches方法进行事件处理。<br>注意：之所以会采取从后往前遍历子控件的方式寻找最合适的view只是为了做一些循环优化。因为相比较之下，后添加的view在上面，降低循环次数。</p>
+<h2 id="3-1-寻找最合适的view底层剖析"><a href="#3-1-寻找最合适的view底层剖析" class="headerlink" title="3.1.寻找最合适的view底层剖析"></a>3.1.寻找最合适的view底层剖析</h2><p>两个重要的方法：<br>hitTest:withEvent:方法<br>pointInside方法</p>
+<h3 id="3-1-1-hitTest：withEvent：方法"><a href="#3-1-1-hitTest：withEvent：方法" class="headerlink" title="3.1.1.hitTest：withEvent：方法"></a>3.1.1.hitTest：withEvent：方法</h3><h4 id="什么时候调用？"><a href="#什么时候调用？" class="headerlink" title="什么时候调用？"></a>什么时候调用？</h4><pre><code>只要事件一传递给一个控件,这个控件就会调用他自己的hitTest：withEvent：方法
+</code></pre><h4 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h4><pre><code>寻找并返回最合适的view(能够响应事件的那个最合适的view)
+</code></pre><p><strong>注 意：</strong>不管这个控件能不能处理事件，也不管触摸点在不在这个控件上，事件都会先传递给这个控件，随后再调用hitTest:withEvent:方法</p>
+<h4 id="拦截事件的处理"><a href="#拦截事件的处理" class="headerlink" title="拦截事件的处理"></a>拦截事件的处理</h4><ul>
+<li>正因为hitTest：withEvent：方法可以返回最合适的view，所以可以通过重写hitTest：withEvent：方法，返回指定的view作为最合适的view。</li>
+<li>不管点击哪里，最合适的view都是hitTest：withEvent：方法中返回的那个view。</li>
+<li>通过重写hitTest：withEvent：，就可以拦截事件的传递过程，想让谁处理事件谁就处理事件。<br>事件传递给谁，就会调用谁的hitTest:withEvent:方法。</li>
+</ul>
+<p><strong>注 意：如果hitTest:withEvent:方法中返回nil，那么调用该方法的控件本身和其子控件都不是最合适的view，也就是在自己身上没有找到更合适的view。那么最合适的view就是该控件的父控件。<br>所以事件的传递顺序是这样的：<br>　　产生触摸事件-&gt;UIApplication事件队列-&gt;[UIWindow hitTest:withEvent:]-&gt;返回更合适的view-&gt;[子控件 hitTest:withEvent:]-&gt;返回最合适的view</strong><br>　　<br>事件传递给窗口或控件的后，就调用hitTest:withEvent:方法寻找更合适的view。所以是，先传递事件，再根据事件在自己身上找更合适的view。<br>不管子控件是不是最合适的view，系统默认都要先把事件传递给子控件，经过子控件调用自己的hitTest:withEvent:方法验证后才知道有没有更合适的view。即便父控件是最合适的view了，子控件的hitTest:withEvent:方法还是会调用，不然怎么知道有没有更合适的！即，如果确定最终父控件是最合适的view，那么该父控件的子控件的hitTest:withEvent:方法也是会被调用的。<br>技巧：想让谁成为最合适的view就重写谁自己的父控件的hitTest:withEvent:方法返回指定的子控件，或者重写自己的hitTest:withEvent:方法 return self。但是，建议在父控件的hitTest:withEvent:中返回子控件作为最合适的view！</p>
+<p>原因在于在自己的hitTest:withEvent:方法中返回自己有时候会出现问题。因为会存在这么一种情况：当遍历子控件时，如果触摸点不在子控件A自己身上而是在子控件B身上，还要要求返回子控件A作为最合适的view，采用返回自己的方法可能会导致还没有来得及遍历A自己，就有可能已经遍历了点真正所在的view，也就是B。这就导致了返回的不是自己而是触摸点真正所在的view。所以还是建议在父控件的hitTest:withEvent:中返回子控件作为最合适的view！<br>例如：whiteView有redView和greenView两个子控件。redView先添加，greenView后添加。如果要求无论点击那里都要让redView作为最合适的view（把事件交给redView来处理）那么只能在whiteView的hitTest:withEvent:方法中return self.subViews[0];这种情况下在redView的hitTest:withEvent:方法中return self;是不好使的！<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">// 这里redView是whiteView的第0个子控件</div><div class="line">#import &quot;redView.h&quot;</div><div class="line"></div><div class="line">@implementation redView</div><div class="line">- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event&#123; </div><div class="line">    return self;</div><div class="line">&#125;</div><div class="line">- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event&#123; </div><div class="line">    NSLog(@&quot;red-touch&quot;);</div><div class="line">&#125;@end</div><div class="line">// 或者</div><div class="line">#import &quot;whiteView.h&quot;</div><div class="line"></div><div class="line">@implementation whiteView</div><div class="line">- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event&#123; </div><div class="line">    return self.subviews[0];</div><div class="line">&#125;</div><div class="line">- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event&#123; </div><div class="line">    NSLog(@&quot;white-touch&quot;);</div><div class="line">&#125;</div><div class="line">@end</div></pre></td></tr></table></figure></p>
+<p>hit:withEvent:方法底层会调用pointInside:withEvent:方法判断点在不在方法调用者的坐标系上。</p>
+<h3 id="3-1-2-pointInside-withEvent-方法"><a href="#3-1-2-pointInside-withEvent-方法" class="headerlink" title="3.1.2.pointInside:withEvent:方法"></a>3.1.2.pointInside:withEvent:方法</h3><p>pointInside:withEvent:方法判断点在不在当前view上（方法调用者的坐标系上）如果返回YES，代表点在方法调用者的坐标系上;返回NO代表点不在方法调用者的坐标系上，那么方法调用者也就不能处理事件。</p>
+<h1 id="4事件的响应"><a href="#4事件的响应" class="headerlink" title="4事件的响应"></a>4事件的响应</h1><h2 id="4-1-触摸事件处理的整体过程"><a href="#4-1-触摸事件处理的整体过程" class="headerlink" title="4.1.触摸事件处理的整体过程"></a>4.1.触摸事件处理的整体过程</h2><p>1&gt;用户点击屏幕后产生的一个触摸事件，经过一系列的传递过程后，会找到最合适的视图控件来处理这个事件2&gt;找到最合适的视图控件后，就会调用控件的touches方法来作具体的事件处理touchesBegan…touchesMoved…touchedEnded…3&gt;这些touches方法的默认做法是将事件顺着响应者链条向上传递（也就是touch方法默认不处理事件，只传递事件），将事件交给上一个响应者进行处理</p>
+<h2 id="4-2-响应者链条示意图"><a href="#4-2-响应者链条示意图" class="headerlink" title="4.2.响应者链条示意图"></a>4.2.响应者链条示意图</h2><p><strong>响应者链条</strong>：在iOS程序中无论是最后面的UIWindow还是最前面的某个按钮，它们的摆放是有前后关系的，一个控件可以放到另一个控件上面或下面，那么用户点击某个控件时是触发上面的控件还是下面的控件呢，这种先后关系构成一个链条就叫“响应者链”。也可以说，响应者链是由多个响应者对象连接起来的链条。</p>
+<p><strong>响应者对象</strong>：能处理事件的对象，也就是继承自UIResponder的对象<br><strong>作用</strong>：能很清楚的看见每个响应者之间的联系，并且可以让一个事件多个对象处理。</p>
+<h4 id="如何判断上一个响应者"><a href="#如何判断上一个响应者" class="headerlink" title="如何判断上一个响应者"></a>如何判断上一个响应者</h4><ol>
+<li>如果当前这个view是控制器的view,那么控制器就是上一个响应者</li>
+<li>如果当前这个view不是控制器的view,那么父控件就是上一个响应者<br>响应者链的事件传递过程:</li>
+</ol>
+<h4 id="事件处理的整个流程总结："><a href="#事件处理的整个流程总结：" class="headerlink" title="事件处理的整个流程总结："></a>事件处理的整个流程总结：</h4><ol>
+<li>触摸屏幕产生触摸事件后，触摸事件会被添加到由UIApplication管理的事件队列中（即，首先接收到事件的是UIApplication）。</li>
+<li>UIApplication会从事件队列中取出最前面的事件，把事件传递给应用程序的主窗口（keyWindow）。</li>
+<li>主窗口会在视图层次结构中找到一个最合适的视图来处理触摸事件。（至此，第一步已完成)</li>
+<li>最合适的view会调用自己的touches方法处理事件</li>
+<li>touches默认做法是把事件顺着响应者链条向上抛。</li>
+</ol>
+<h4 id="事件的传递与响应："><a href="#事件的传递与响应：" class="headerlink" title="事件的传递与响应："></a>事件的传递与响应：</h4><ol>
+<li><p>当一个事件发生后，事件会从父控件传给子控件，也就是说由UIApplication -&gt; UIWindow -&gt; UIView -&gt; initial view,以上就是事件的传递，也就是寻找最合适的view的过程。</p>
+</li>
+<li><p>接下来是事件的响应。首先看initial view能否处理这个事件，如果不能则会将事件传递给其上级视图（inital view的superView）；如果上级视图仍然无法处理则会继续往上传递；一直传递到视图控制器view controller，首先判断视图控制器的根视图view是否能处理此事件；如果不能则接着判断该视图控制器能否处理此事件，如果还是不能则继续向上传 递；（对于第二个图视图控制器本身还在另一个视图控制器中，则继续交给父视图控制器的根视图，如果根视图不能处理则交给父视图控制器处理）；一直到 window，如果window还是不能处理此事件则继续交给application处理，如果最后application还是不能处理此事件则将其丢弃</p>
+</li>
+<li><p>在事件的响应中，如果某个控件实现了touches…方法，则这个事件将由该控件来接受，如果调用了[supertouches….];就会将事件顺着响应者链条往上传递，传递给上一个响应者；接着就会调用上一个响应者的touches….方法</p>
+</li>
+</ol>
+<h4 id="如何做到一个事件多个对象处理："><a href="#如何做到一个事件多个对象处理：" class="headerlink" title="如何做到一个事件多个对象处理："></a>如何做到一个事件多个对象处理：</h4><p>因为系统默认做法是把事件上抛给父控件，所以可以通过重写自己的touches方法和父控件的touches方法来达到一个事件多个对象处理的目的。</p>
+<figure class="highlight plain"><figcaption><span>(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event&#123; </span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">// 1.自己先处理事件...</div><div class="line">NSLog(@&quot;do somthing...&quot;);</div><div class="line">// 2.再调用系统的默认做法，再把事件交给上一个响应者处理</div><div class="line">[super touchesBegan:touches withEvent:event]; </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="事件的传递和响应的区别："><a href="#事件的传递和响应的区别：" class="headerlink" title="事件的传递和响应的区别："></a>事件的传递和响应的区别：</h4><p>事件的传递是从上到下（父控件到子控件），事件的响应是从下到上（顺着响应者链条向上传递：子控件到父控件。</p>
+<p>参考链接：<a href="http://www.jianshu.com/p/2e074db792ba" target="_blank" rel="external">http://www.jianshu.com/p/2e074db792ba</a></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/09/07/算法最长无重复子串/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">&lt;</strong>
+      <div class="article-nav-title">
+        
+          Longest Substring Without Repeating Characters
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/06/27/ReactNative/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">iOS React/RCTBundleURLProvider.h&#39; file not found</div>
+      <strong class="article-nav-caption">&gt;</strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="ds-share share" data-thread-key="iOS事件的传递和响应" data-title="iOS 事件的传递和响应" data-url="http://yoursite.com/2017/08/24/iOS事件的传递和响应/"  data-images="http://ow7iaz7ej.bkt.clouddn.com/%E9%92%9F.jpg" data-content="iOS 事件的传递和响应">
+    <div class="ds-share-inline">
+      <ul  class="ds-share-icons-16">
+      	<li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+        <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+        <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+        <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+        <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+      </ul>
+      <div class="ds-share-icons-more">
+      </div>
+    </div>
+ </div>
+ 
+
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+      <div class="footer-left">
+        &copy; 2017 leerme
+      </div>
+        <div class="footer-right">
+          <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/smackgg/hexo-theme-smackdown" target="_blank">Smackdown</a>
+        </div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="/js/main.js"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js"></script>
+
+
+  </div>
+</body>
+</html>
