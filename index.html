@@ -190,6 +190,67 @@
 </nav>
       <div class="body-wrap">
   
+    <article id="post-iOS多线程" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/03/25/iOS多线程/" class="article-date">
+  	<time datetime="2018-03-25T03:37:51.000Z" itemprop="datePublished">2018-03-25</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/03/25/iOS多线程/">
+        iOS多线程
+        
+      </a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Objective-C本身不支持多继承-可以通过一下方式实现多继承"><a href="#Objective-C本身不支持多继承-可以通过一下方式实现多继承" class="headerlink" title="Objective-C本身不支持多继承 可以通过一下方式实现多继承"></a>Objective-C本身不支持多继承 可以通过一下方式实现多继承</h2><p>classA 实现了methodA  方法  classB 实现了 methodB 方法   classC 要同时实现methodA和methodB方法 在C++ 中用多继承就能实现，但是Objective c 不支持多重继承，那如何实现。</p>
+<h2 id="方法1-组合方式，用ClassC-添加ClassA-ClassB成员变量-来调用methodA，methodB"><a href="#方法1-组合方式，用ClassC-添加ClassA-ClassB成员变量-来调用methodA，methodB" class="headerlink" title="方法1. 组合方式，用ClassC  添加ClassA ,ClassB成员变量 来调用methodA，methodB"></a>方法1. 组合方式，用ClassC  添加ClassA ,ClassB成员变量 来调用methodA，methodB</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">//定义ClassA以及其methodA</div><div class="line">@interface ClassA : NSObject &#123;</div><div class="line"></div><div class="line">&#125;</div><div class="line">- (void)methodA;</div><div class="line">@end</div><div class="line"></div><div class="line">//定义ClassB以及其methodB</div><div class="line">@interface ClassB : NSObject &#123;</div><div class="line"></div><div class="line">&#125;</div><div class="line">- (void)methodB;</div><div class="line">@end</div><div class="line"></div><div class="line">//定义ClassC以及其需要的methodA，methodB</div><div class="line">@interface ClassC : NSObject &#123;</div><div class="line">  ClassA *a;</div><div class="line">  ClassB *b;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (id)initWithA:(ClassA *)A b:(ClassB *)B;</div><div class="line">- (void)methodA;</div><div class="line">- (void)methodB;</div><div class="line"></div><div class="line">@end</div><div class="line"></div><div class="line">//注意在ClassC的实现</div><div class="line">@implementation  ClassC</div><div class="line"></div><div class="line">- (id)initWithA:(ClassA *)A b:(ClassB *)B&#123;</div><div class="line">  a=[[ClassA alloc] initWithClassA: A];//[A copy];</div><div class="line">  b=[[ClassB alloc] initWithClassB: B];//[B copy];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)methodA&#123;</div><div class="line">  [a methodA];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)methodB&#123;</div><div class="line">  [b methodB];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="方法2-协议protocol"><a href="#方法2-协议protocol" class="headerlink" title="方法2.协议protocol"></a>方法2.协议protocol</h2><p>设置ClassA delegate和 ClasssB delegate 以及实现方法ClassA里的methodA，和ClasssB里的methodB。ClassC遵守这两个协议就可以。</p>
+<h2 id="方法3-类别"><a href="#方法3-类别" class="headerlink" title="方法3.类别"></a>方法3.类别</h2><p>ClassC的类别 可以实现ClassA的methodA和ClassB的methodB两个方法，这样ClassC就可以调用methodA和methodB</p>
+<h2 id="方法4-消息转发机制"><a href="#方法4-消息转发机制" class="headerlink" title="方法4.消息转发机制"></a>方法4.消息转发机制</h2><p>我们知道objective-c中调用方法的方式是发消息，那如果给一个实例对象发一个未定义的消息呢？结果就是crash，其实这中间系统给我们第二次机会，就是可以转发该消息<br>如果未调到定义的消息，runtime会给该实例第二次机会，首先调用methodSignatureForSelector 或去方法签名，然后调用forwardInvocation，如果用户自己定义的类，没有重写这两个方法，即不支持方法转发</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">@interface LOCBird : NSObject &#123;  </div><div class="line">    NSString* _name;  </div><div class="line">&#125;  </div><div class="line">@end  </div><div class="line">  </div><div class="line">  </div><div class="line">@implementation LOCBird  </div><div class="line">  </div><div class="line">- (id)init  </div><div class="line">&#123;  </div><div class="line">    self = [super init];  </div><div class="line">    if (self) &#123;  </div><div class="line">        _name = [[NSString alloc] initWithString:@&quot;I am a Bird!!&quot;];  </div><div class="line">          </div><div class="line">    &#125;  </div><div class="line">    return self;  </div><div class="line">&#125;  </div><div class="line">  </div><div class="line">- (void)dealloc  </div><div class="line">&#123;  </div><div class="line">    [_name  release];  </div><div class="line">    [super dealloc];  </div><div class="line">&#125;  </div><div class="line">  </div><div class="line">- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector  </div><div class="line">&#123;  </div><div class="line">    NSMethodSignature* signature = [super methodSignatureForSelector:aSelector];  </div><div class="line">    if (signature==nil) &#123;  </div><div class="line">        signature = [_name methodSignatureForSelector:aSelector];  </div><div class="line">    &#125;  </div><div class="line">    NSUInteger argCount = [signature numberOfArguments];  </div><div class="line">    for (NSInteger i=0 ; i&lt;argCount ; i++) &#123;  </div><div class="line">        NSLog(@&quot;%s&quot; , [signature getArgumentTypeAtIndex:i]);  </div><div class="line">    &#125;  </div><div class="line">    NSLog(@&quot;returnType:%s ,returnLen:%d&quot; , [signature methodReturnType] , [signature methodReturnLength]);  </div><div class="line">    NSLog(@&quot;signature:%@&quot; , signature);  </div><div class="line">    return signature;  </div><div class="line">&#125;  </div><div class="line">  </div><div class="line">- (void)forwardInvocation:(NSInvocation *)anInvocation  </div><div class="line">&#123;  </div><div class="line">    NSLog(@&quot;forwardInvocation:%@&quot; , anInvocation);  </div><div class="line">    SEL seletor = [anInvocation selector];  </div><div class="line">    if ([_name respondsToSelector:seletor]) &#123;  </div><div class="line">        [anInvocation invokeWithTarget: _name];  </div><div class="line">    &#125;  </div><div class="line">      </div><div class="line">&#125;  </div><div class="line">@end</div></pre></td></tr></table></figure>
+<p> 多继承消息转发原理就是  ClassC 没法实现methodA 和methodB 但是有成员变量ClassA 实力和ClassB实例。可以在用ClassC调用methodA 和methodB方法的时候消息转发给对应的实例就不会导致crash。其实和1组合方式类似。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+      
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
     <article id="post-深入理解Objective-C：Category" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -933,78 +994,10 @@
 
 
   
-    <article id="post-右滑返回" class="article article-type-post" itemscope itemprop="blogPost">
   
-    <div class="article-meta">
-      <a href="/2017/03/23/右滑返回/" class="article-date">
-  	<time datetime="2017-03-23T05:52:15.000Z" itemprop="datePublished">2017-03-23</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/03/23/右滑返回/">
-        iOS | 右滑返回
-        
-      </a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>苹果系统自带的右滑返回方便方便人们更好的使用APP，前几天老总就提了这个需求，今天结合自己项目谈一谈，产品设计的需求诡异，打破了系统默认的页面跳转规则（Push、Pop），各个页面神跳转(好了不吐槽了),需要自己自定义NavigationController从而导致系统自带的右滑返回失效。</p>
-<h3 id="下面先看一下实现效果"><a href="#下面先看一下实现效果" class="headerlink" title="下面先看一下实现效果."></a>下面先看一下实现效果.</h3><div align="center"><br><img src="http://ow7iaz7ej.bkt.clouddn.com/1rightSlide.gif" alt="屏幕截图"><br></div>
-
-<h3 id="效果还不错吧-直接上代码"><a href="#效果还不错吧-直接上代码" class="headerlink" title="效果还不错吧,直接上代码"></a>效果还不错吧,直接上代码</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#import <span class="meta-string">"LYNavigationController.h"</span></span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">LYNavigationController</span> () &lt;<span class="title">UIGestureRecognizerDelegate</span>&gt;</span></div><div class="line"></div><div class="line"><span class="keyword">@end</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">LYNavigationController</span></span></div><div class="line"></div><div class="line">- (<span class="keyword">void</span>)viewDidLoad&#123;</div><div class="line">[<span class="keyword">super</span> viewDidLoad];</div><div class="line"><span class="comment">//  这句很核心 稍后讲解</span></div><div class="line"><span class="keyword">id</span> target = <span class="keyword">self</span>.interactivePopGestureRecognizer.delegate;</div><div class="line"><span class="comment">//  这句很核心 稍后讲解</span></div><div class="line">SEL handler = <span class="built_in">NSSelectorFromString</span>(<span class="string">@"handleNavigationTransition:"</span>);</div><div class="line"><span class="comment">//  获取添加系统边缘触发手势的View</span></div><div class="line"><span class="built_in">UIView</span> *targetView = <span class="keyword">self</span>.interactivePopGestureRecognizer.view;</div><div class="line"></div><div class="line"><span class="comment">//  创建pan手势 作用范围是全屏</span></div><div class="line"><span class="built_in">UIPanGestureRecognizer</span> * fullScreenGes = [[<span class="built_in">UIPanGestureRecognizer</span> alloc]initWithTarget:target action:handler];</div><div class="line">fullScreenGes.delegate = <span class="keyword">self</span>;</div><div class="line">[targetView addGestureRecognizer:fullScreenGes];</div><div class="line"></div><div class="line"><span class="comment">// 关闭边缘触发手势 防止和原有边缘手势冲突</span></div><div class="line">[<span class="keyword">self</span>.interactivePopGestureRecognizer setEnabled:<span class="literal">NO</span>];</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//  防止导航控制器只有一个rootViewcontroller时触发手势</span></div><div class="line">- (<span class="built_in">BOOL</span>)gestureRecognizerShouldBegin:(<span class="built_in">UIPanGestureRecognizer</span> *)gestureRecognizer &#123;</div><div class="line"><span class="comment">//解决与左滑手势冲突</span></div><div class="line"><span class="built_in">CGPoint</span> translation = [gestureRecognizer translationInView:gestureRecognizer.view];</div><div class="line"><span class="keyword">if</span> (translation.x &lt;= <span class="number">0</span>) &#123;</div><div class="line"><span class="keyword">return</span> <span class="literal">NO</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">return</span> <span class="keyword">self</span>.childViewControllers.count == <span class="number">1</span> ? <span class="literal">NO</span> : <span class="literal">YES</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div><div class="line"></div></pre></td></tr></table></figure>
-<p>在实现之前,先推测一下苹果实现pop的大概思路.首先,需要在一个合适的view上添加边缘手势,其次,针对这个手势必然要实现一个方法响应该事件.当然,根据苹果一贯代码风格,处理该事件很可能交给另一个专门的类去处理.</p>
-<p>假如以上推测成立,只要获得那个专门处理事件的类和方法,实现全屏pop效果就很简单了.</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">(lldb) pclass [<span class="keyword">self</span> interactivePopGestureRecognizer]</div><div class="line"><span class="comment">// 信息-&gt;1</span></div><div class="line"><span class="built_in">UIScreenEdgePanGestureRecognizer</span></div><div class="line">| <span class="built_in">UIPanGestureRecognizer</span></div><div class="line">|    | <span class="built_in">UIGestureRecognizer</span></div><div class="line">|    |    | <span class="built_in">NSObject</span></div><div class="line">(lldb) pclass [<span class="keyword">self</span> interactivePopGestureRecognizer].delegate</div><div class="line"><span class="comment">// 信息-&gt;2</span></div><div class="line">_UINavigationInteractiveTransition</div><div class="line">| _UINavigationInteractiveTransitionBase</div><div class="line">|    | <span class="built_in">UIPercentDrivenInteractiveTransition</span></div><div class="line">|    |    | <span class="built_in">NSObject</span></div><div class="line">(lldb) po [<span class="keyword">self</span> interactivePopGestureRecognizer]</div><div class="line"><span class="comment">// 信息-&gt;3</span></div><div class="line">&lt;<span class="built_in">UIScreenEdgePanGestureRecognizer</span>: <span class="number">0x7fab1243be00</span>; state = Possible; enabled = <span class="literal">NO</span>; delaysTouchesBegan = <span class="literal">YES</span>; view = &lt;<span class="built_in">UILayoutContainerView</span> <span class="number">0x7fab126a4a60</span>&gt;; target= &lt;(action=handleNavigationTransition:, target=&lt;_UINavigationInteractiveTransition <span class="number">0x7fab1243b850</span>&gt;)&gt;&gt;</div><div class="line"></div><div class="line">(lldb) po [<span class="keyword">self</span> interactivePopGestureRecognizer].delegate</div><div class="line"><span class="comment">// 信息-&gt;4</span></div><div class="line">&lt;_UINavigationInteractiveTransition: <span class="number">0x7fab1243b850</span>&gt;</div><div class="line"></div><div class="line">(lldb)</div></pre></td></tr></table></figure>
-<p>从信息1中,可以知道interactivePopGestureRecognizer属性并不是UIGestureRecognizer类型的对象,而是其子类UIPanGestureRecognizer的子类UIScreenEdgePanGestureRecognizer类型的对象.</p>
-<p>UIScreenEdgePanGestureRecognizer是边缘触发手势,在系统中公有API,里面只有一个edges属性,用来设置具体边缘有效,如左边缘.具体可以参考官方API.</p>
-<p>在信息3中,可以看到<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">target= (action=handleNavigationTransition:, target=&lt;_UINavigationInteractiveTransition x7fab1243b850&gt;)</div></pre></td></tr></table></figure><br>这样一条信息,里面包含了target和action.看到这是不是很兴奋?iOS开发者再也属性不过的目标-动作模式了.</p>
-<p>到这里,已经可以确定苹果的实现方式是通过边缘触发手势处理pop的.这里target是私有的,如何获得呢?于是,网上很多人开始使用runtime来获得一些私有的方法.笔者一般不愿在正式上线的项目中使用runtime获得私有API,虽然不一定会被苹果拒接,但是会有一定风险</p>
-<p>难道有没不用runtime的好方法?</p>
-<p>先别着急,继续看信息2和4, interactivePopGestureRecognizer的代理是_UINavigationInteractiveTransition,看类名可以想到该类和交互转场相关.分析到这里,基本上可以推测出苹果是通过代理将事件处理委托给了_UINavigationInteractiveTransition对象.</p>
-<p>在信息3中,可以看到target=<_uinavigationinteractivetransition 0x7fab1243b850="">的地址是0x7fab1243b850,信息4中<_uinavigationinteractivetransition: 0x7fab1243b850="">的地址也是0x7fab1243b850.</_uinavigationinteractivetransition:></_uinavigationinteractivetransition></p>
-<p>由以上分析,可以确定苹果的实现方式是将处理边缘触发的事件的任务委托给了_UINavigationInteractiveTransition,在_UINavigationInteractiveTransition中有处理该事件的方法handleNavigationTransition:.</p>
-<h3 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">id</span> target = <span class="keyword">self</span>.interactivePopGestureRecognizer.delegate;</div></pre></td></tr></table></figure>
-<p>这句代码目的是获取事件处理对象.以便自己添加的手势可以把事件处理委托给它.<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">SEL handler = <span class="built_in">NSSelectorFromString</span>(<span class="string">@"handleNavigationTransition:"</span>);</div></pre></td></tr></table></figure><br>这句就是获取委托对象里的处理方法.<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">UIPanGestureRecognizer</span> * fullScreenGes = [[<span class="built_in">UIPanGestureRecognizer</span> alloc]initWithTarget:target action:handler];</div><div class="line">fullScreenGes.delegate = <span class="keyword">self</span>;</div><div class="line">[targetView addGestureRecognizer:fullScreenGes];</div></pre></td></tr></table></figure><br>这几句就是添加自己的全屏手势,通过目标-动作模式把任务交给了系统委托对象处理.</p>
-<h3 id="建议"><a href="#建议" class="headerlink" title="建议"></a>建议</h3><p>如果需要自定制导航时,实现是写在UINavigationController子类中,比较方便.如果不需要,可以单独写一个分类.这里写在GLNavigationController中,其中GLNavigationController.h继承自UINavigationController.</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-      
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
+    <nav id="page-nav">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+    </nav>
   
 </div>
       <footer id="footer">
